@@ -4,7 +4,7 @@ var socket = require("socket.io");
 // App setup
 var app = express();
 var server = app.listen(4000, function() {
-  console.log("listening for requests on port 4000,");
+  console.log("listening for requests on port 4000");
 });
 
 // Static files
@@ -15,17 +15,6 @@ var io = socket(server);
 io.on("connection", socket => {
   console.log("made socket connection", socket.id);
 
-  // Handle chat event
-  // socket.on('chat', function(data){
-  //     // console.log(data);
-  //     io.sockets.emit('chat', data);
-  // });
-
-  // Handle typing event
-  // socket.on('typing', function(data){
-  //     socket.broadcast.emit('typing', data);
-  // });
-
   //Handle play event
   socket.on("play", function(data) {
     io.sockets.emit("play", data);
@@ -34,5 +23,10 @@ io.on("connection", socket => {
   //Handle pause event
   socket.on("pause", function() {
     io.sockets.emit("pause");
+  });
+
+  //Handle search event
+  socket.on("change", function(data) {
+    io.sockets.emit("change", data);
   });
 });

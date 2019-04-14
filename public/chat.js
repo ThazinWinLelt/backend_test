@@ -1,114 +1,23 @@
 // Make connection
 var socket = io.connect("http://localhost:4000");
 
-// Query DOM
-// var message = document.getElementById("message"),
-//   handle = document.getElementById("handle"),
-//   btn = document.getElementById("send"),
-//   output = document.getElementById("output"),
-//   feedback = document.getElementById("feedback");
-
-// Emit events
-// btn.addEventListener("click", function() {
-//   socket.emit("chat", {
-//     message: message.value,
-//     handle: handle.value
-//   });
-//   message.value = "";
-// });
-
-// message.addEventListener("keypress", function() {
-//   socket.emit("typing", handle.value);
-// });
-
-// Listen for events
-// socket.on("chat", function(data) {
-//   feedback.innerHTML = "";
-//   output.innerHTML +=
-//     "<p><strong>" + data.handle + ": </strong>" + data.message + "</p>";
-// });
-
-// socket.on("typing", function(data) {
-//   feedback.innerHTML = "<p><em>" + data + " is typing a message...</em></p>";
-// });
-
-////////
-var tag = document.createElement("script");
-// tag.id = "iframe-demo";
-tag.src = "https://www.youtube.com/iframe_api";
-var firstScriptTag = document.getElementsByTagName("script")[0];
-firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-// var player;
-// function onYouTubeIframeAPIReady() {
-//   console.log("ready");
-//   player = new YT.Player("existing-iframe-example", {
-//     events: {
-//       onReady: onPlayerReady,
-//       onStateChange: onPlayerStateChange
-//     }
-//   });
-// }
-
-// function onPlayerReady(event) {
-//   console.log("start");
-//   document.getElementById("existing-iframe-example").style.borderColor =
-//     "#FF6D00";
-// }
-// function changeBorderColor(playerStatus) {
-//   var color;
-//   if (playerStatus == -1) {
-//     color = "#37474F"; // unstarted = gray
-//   } else if (playerStatus == 0) {
-//     color = "#FFFF00"; // ended = yellow
-//   } else if (playerStatus == 1) {
-//     console.log("play");
-//     //console.log(player.getCurrentTime());
-//     socket.emit("play", player.getCurrentTime());
-//     color = "#33691E"; // playing = green
-//   } else if (playerStatus == 2) {
-//     console.log("paused");
-//     color = "#DD2C00"; // paused = red
-//   } else if (playerStatus == 3) {
-//     color = "#AA00FF"; // buffering = purple
-//   } else if (playerStatus == 5) {
-//     color = "#FF6DOO"; // video cued = orange
-//   }
-//   if (color) {
-//     document.getElementById(
-//       "existing-iframe-example"
-//     ).style.borderColor = color;
-//   }
-// }
-// function onPlayerStateChange(event) {
-//   changeBorderColor(event.data);
-// }
-
-// socket.on("play", function(data) {
-//   console.log("now playing");
-//   console.log(data);
-//   player.seekTo(data);
-//   player.playVideo();
-// });
+var play = document.getElementById("play");
+var pause = document.getElementById("pause");
+var search = document.getElementById("search");
+var videoname = document.getElementById("video-name");
+var list = document.getElementById("search-list");
 
 var player,
   time_update_interval = 0;
 var flag = false;
+var videoId = "M7lc1UVf-VE";
+var APIkey = "AIzaSyC2OMSz7cuDT_OzLkIrWuVuWGffPiJxKxw";
 
-function onYouTubeIframeAPIReady() {
-  player = new YT.Player("video-placeholder", {
-    width: 600,
-    height: 400,
-    videoId: "M7lc1UVf-VE",
-    events: {
-      onReady: initialize,
-      onStateChange: onPlayerStateChange
-    }
-  });
-}
+$("#search-title").hide();
 
 function initialize() {
   console.log("initialize");
+
   // Clear any old interval.
   clearInterval(time_update_interval);
 }
@@ -123,25 +32,108 @@ function onPlayerStateChange(event) {
   }
 }
 
-var play = document.getElementById("play");
-var pause = document.getElementById("pause");
-
 play.addEventListener("click", function(event) {
+  console.log("play emit");
   socket.emit("play", player.getCurrentTime());
 });
 
 pause.addEventListener("click", function(event) {
+  console.log("pause emit");
   socket.emit("pause");
 });
 
 socket.on("play", function(data) {
-  console.log("now playing");
-  console.log(data);
+  console.log("play listen");
   player.playVideo();
   player.seekTo(data);
 });
 
 socket.on("pause", function() {
-  console.log("now pause");
+  console.log("pause listen");
   player.pauseVideo();
 });
+
+search.addEventListener("click", function(event) {
+  $("#search-title").show();
+
+  var q = videoname.value;
+  var urlReq = "https://www.googleapis.com/youtube/v3/search";
+
+  $.ajax({
+    url: urlReq,
+    data: {
+      part: "snippet,id",
+      q: q,
+      type: "video",
+      key: APIkey
+    },
+    success: (result, status, xhr) => {
+      var datas = result.items;
+
+      document.getElementById("search-list").innerHTML = "";
+
+      datas.forEach(data => {
+        var node = document.createElement("div");
+        node.setAttribute("id", data.id.videoId);
+        node.innerHTML =
+          "<img src='" +
+          data.snippet.thumbnails.default.url +
+          "' id=" +
+          data.id.videoId +
+          "><br>" +
+          data.snippet.title +
+          "<br>";
+        document.getElementById("search-list").appendChild(node);
+      });
+    },
+    error: (xhr, status, err) => {
+      console.log(xhr);
+    }
+  });
+});
+
+list.addEventListener("click", function(event) {
+  document.getElementById("search-list").innerHTML = "";
+  $("#search-title").hide();
+
+  socket.emit("change", event.target.id);
+});
+
+socket.on("change", function(data) {
+  //iframe initialize
+  var tag = document.createElement("script");
+  tag.src = "https://www.youtube.com/iframe_api";
+  var firstScriptTag = document.getElementsByTagName("script")[0];
+  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+  videoId = data;
+
+  if (player) {
+    player.destroy();
+
+    player = new YT.Player("video-placeholder", {
+      width: 600,
+      height: 400,
+      videoId: videoId,
+      events: {
+        onReady: initialize,
+        onStateChange: onPlayerStateChange
+      }
+    });
+  }
+
+  $("#buttons").show();
+});
+
+//youtube api download
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player("video-placeholder", {
+    width: 600,
+    height: 400,
+    videoId: videoId,
+    events: {
+      onReady: initialize,
+      onStateChange: onPlayerStateChange
+    }
+  });
+}

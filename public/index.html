@@ -2,8 +2,9 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>WebScockets 101</title>
+    <title>Youtube Player</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
     <link href="/styles.css" rel="stylesheet" />
     <link
@@ -12,28 +13,15 @@
     />
   </head>
   <body>
-    <!-- <div id="mario-chat">
-      <h2>Mario Chat</h2>
-      <div id="chat-window">
-        <div id="output"></div>
-        <div id="feedback"></div>
-      </div>
-      <input id="handle" type="text" placeholder="Handle" />
-      <input id="message" type="text" placeholder="Message" />
-      <button id="send">Send</button>
-    </div> -->
-
-    <!-- <iframe
-      id="existing-iframe-example"
-      width="640"
-      height="360"
-      src="https://www.youtube.com/embed/M7lc1UVf-VE?enablejsapi=1"
-      frameborder="0"
-      style="border: solid 4px #37474F"
-    ></iframe> -->
-
-    <div id="video-placeholder"></div>
     <div>
+      <h2>Search Video</h2>
+      <input type="text" id="video-name" placeholder="search" />
+      <input type="button" id="search" value="search" />
+    </div>
+    <p id="search-title"><strong>search results</strong></p>
+    <div id="search-list"></div>
+    <div id="video-placeholder"></div>
+    <div id="buttons">
       <i id="play" class="material-icons">play_arrow</i>
       <i id="pause" class="material-icons">pause</i>
     </div>

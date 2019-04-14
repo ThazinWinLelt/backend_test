@@ -1,8 +1,12 @@
-body{
-    font-family: 'Nunito';
+body {
+    text-align: center;
 }
 
-h2{
+#buttons {
+    display: none;
+}
+
+/* h2{
     font-size: 18px;
     padding: 10px 20px;
     color: #575ed8;
@@ -66,4 +70,4 @@ button{
     padding: 12px 0;
     width: 100%;
     border-radius: 0 0 2px 2px;
-}
+} */
