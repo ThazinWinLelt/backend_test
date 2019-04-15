@@ -1,9 +1,65 @@
 body {
+    font-family: sans-serif;
     text-align: center;
 }
 
 #buttons {
     display: none;
+    padding-top: 10px;
+    padding-bottom: 20px;
+}
+
+.img-div {
+    width: 80px;
+}
+
+.img-div img {
+    width: 80px;
+}
+
+.title-div {
+    padding-left: 10px;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+#search-list {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+#search-list .row {
+    padding: 5px 0 5px 20px;
+}
+
+#search-box {
+    background-color: whitesmoke;
+    padding: 20px;
+    text-align: center;
+}
+
+#search {
+    border: 2px solid #00B4CC;
+    background-color: #00B4CC;
+    width: 50px;
+    padding: 3px;
+    font-size: 16px;
+}
+
+#search-key {
+    width: 40%;
+    padding: 5px;
+    border: 3px solid #00B4CC;
+    font-size: 12px;
+}
+
+#play, #pause {
+    width: 50px;
+    background-color: #00B4CC;
+    border: 3px solid #00B4CC;
+    font-size: 12px;
+    text-align: center;
+    padding: 5px;
 }
 
 /* h2{

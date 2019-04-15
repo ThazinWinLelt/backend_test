@@ -4,7 +4,7 @@ var socket = io.connect("http://localhost:4000");
 var play = document.getElementById("play");
 var pause = document.getElementById("pause");
 var search = document.getElementById("search");
-var videoname = document.getElementById("video-name");
+var videoname = document.getElementById("search-key");
 var list = document.getElementById("search-list");
 
 var player,
@@ -73,17 +73,28 @@ search.addEventListener("click", function(event) {
       document.getElementById("search-list").innerHTML = "";
 
       datas.forEach(data => {
-        var node = document.createElement("div");
-        node.setAttribute("id", data.id.videoId);
-        node.innerHTML =
+        var rowdiv = document.createElement("div");
+        rowdiv.setAttribute("class", "row");
+        rowdiv.setAttribute("id", data.id.videoId);
+
+        var imgdiv = document.createElement("div");
+        imgdiv.setAttribute("id", data.id.videoId);
+        imgdiv.setAttribute("class", "img-div");
+        imgdiv.innerHTML =
           "<img src='" +
           data.snippet.thumbnails.default.url +
           "' id=" +
           data.id.videoId +
-          "><br>" +
-          data.snippet.title +
-          "<br>";
-        document.getElementById("search-list").appendChild(node);
+          ">";
+
+        var titlediv = document.createElement("div");
+        titlediv.setAttribute("id", data.id.videoId);
+        titlediv.setAttribute("class", "title-div");
+        titlediv.innerHTML = data.snippet.title;
+
+        rowdiv.appendChild(imgdiv);
+        rowdiv.appendChild(titlediv);
+        document.getElementById("search-list").appendChild(rowdiv);
       });
     },
     error: (xhr, status, err) => {
@@ -93,10 +104,12 @@ search.addEventListener("click", function(event) {
 });
 
 list.addEventListener("click", function(event) {
-  document.getElementById("search-list").innerHTML = "";
-  $("#search-title").hide();
+  if (event.target.id != "search-list") {
+    document.getElementById("search-list").innerHTML = "";
+    $("#search-title").hide();
 
-  socket.emit("change", event.target.id);
+    socket.emit("change", event.target.id);
+  }
 });
 
 socket.on("change", function(data) {
